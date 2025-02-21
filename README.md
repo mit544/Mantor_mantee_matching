@@ -27,7 +27,7 @@ This is a **mentor-mentee matching platform** designed to automate the pairing o
 ## 🛠 Installation & Setup
 ### 1️⃣ Clone the Repository
 ```bash
- git clone https://github.com/yourusername/mentor-mentee-matching.git
+ git clone https://github.com/mit544/mentor-mentee-matching.git
  cd mentor-mentee-matching
 ```
 ### 2️⃣ Install Dependencies
@@ -37,11 +37,11 @@ This is a **mentor-mentee matching platform** designed to automate the pairing o
 ### 3️⃣ Set Up Environment Variables
 Create a `.env.local` file and configure:
 ```
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_secret_key
-EMAIL_SERVER=smtp://your_email_provider
-EMAIL_FROM=your_email@example.com
+NEXTAUTH_SECRET=
+EMAIL_SERVER=
+EMAIL_FROM=
 ```
 ### 4️⃣ Run the Development Server
 ```bash
