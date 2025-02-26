@@ -5,6 +5,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-sans: var(--font-fira);
+  --font-kanit: var(--font-kanit);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,9 +17,9 @@
 }
 
 body {
+  font-family: var(--font-sans);
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Default heading styles */
