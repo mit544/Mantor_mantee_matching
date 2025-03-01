@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../src/styles/globals.css";
+import "./src/styles/globals.css";
 import { Fira_Sans, Kanit } from "next/font/google";
 
 export const metadata: Metadata = {

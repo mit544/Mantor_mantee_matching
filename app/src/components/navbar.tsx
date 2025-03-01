@@ -2,7 +2,7 @@
 import Link from "next/link";
 import "../styles/globals.css";
 import Image from "next/image";
-import navlogo from "../../public/rounded_logo_without_background.png";
+// import navlogo from "../../";
 import { Button, ButtonGroup } from "@heroui/button";
 import { usePathname } from "next/navigation";
 
@@ -12,11 +12,11 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-background text-text absolute top-0 w-full h-20 rounded-b-2xl px-12 shadow-md">
+      <nav className="bg-background text-text w-full h-20 rounded-b-2xl px-12 shadow-md">
         <ul className="flex items-center h-full justify-between">
           <li>
             <a href="#" className="pr-8">
-              <Image src={navlogo} alt="Logo" className="w-14 inline-block" />
+              <Image width='56' height={0} src={'/rounded_logo_without_background.png'} alt="Logo" className="w-14 inline-block" />
             </a>
             <Link
               href="/"
@@ -29,9 +29,9 @@ export default function Navbar() {
               Home
             </Link>
             <Link
-              href="/about"
+              href="/about_us"
               className={`mx-4 font-normal transition-all ${
-                pathname === "/about"
+                pathname === "/about_us"
                   ? "font-extrabold border-b-2 border-primary text-primary"
                   : "hover:text-blue-500"
               }`}
@@ -39,9 +39,9 @@ export default function Navbar() {
               About Us
             </Link>
             <Link
-              href="/contact"
+              href="/contact_us"
               className={`mx-4 font-normal transition-all ${
-                pathname === "/contact"
+                pathname === "/contact_us"
                   ? "font-extrabold border-b-2 border-primary text-primary"
                   : "hover:text-blue-500"
               }`}
