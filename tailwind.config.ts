@@ -12,10 +12,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#0077B6",
-        accent: "#FFD700", 
-        background: "#F5F5F5",
-        text: "#333333",
+        primary: '#E31C3D',   // UA92 Red
+        accent: '#000000',    // Black
+        background: '#FFFFFF', // White
+        text: '#000000',      // Black
       },
     },
   },

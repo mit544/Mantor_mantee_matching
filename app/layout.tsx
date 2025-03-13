@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "MentorMatch",
   description: "Find the best mentor for your career journey.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/main_logo_ua92_style.png",
   },
 };
 
