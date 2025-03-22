@@ -1,71 +1,102 @@
+// app/api/match/route.ts
+
+import { NextRequest, NextResponse } from 'next/server';
 import connectMongoDB from "@/lib/mongodb";
-import Mentor from "@/models/mentor";
-import Mentee from "@/models/mentee";
-import { NextResponse } from "next/server";
+import Mentor from '@/models/mentor';
+import Mentee from '@/models/mentee';
+import mongoose from 'mongoose';
 
-// Cosine Similarity Function
-const cosineSimilarity = (vectorA: number[], vectorB: number[]): number => {
-  const dotProduct = vectorA.reduce((sum, val, i) => sum + val * vectorB[i], 0);
-  const magnitudeA = Math.sqrt(vectorA.reduce((sum, val) => sum + val * val, 0));
-  const magnitudeB = Math.sqrt(vectorB.reduce((sum, val) => sum + val * val, 0));
-  return magnitudeA && magnitudeB ? dotProduct / (magnitudeA * magnitudeB) : 0;
+const getOverlapScore = (arr1: string[], arr2: string[], weight = 1): number => {
+  const set1 = new Set(arr1.map((s) => s.toLowerCase()));
+  const set2 = new Set(arr2.map((s) => s.toLowerCase()));
+  const overlap = [...set1].filter((x) => set2.has(x));
+  return overlap.length * weight;
 };
 
-// Convert mentor/mentee attributes into a numerical vector
-const createFeatureVector = (user: any) => {
-  return [
-    user.industry ? 1 : 0, // Industry match (Binary)
-    (user.short_term_goals && Array.isArray(user.short_term_goals)) ? user.short_term_goals.length : 0, // Number of goals
-    (user.skills_to_develop && Array.isArray(user.skills_to_develop)) ? user.skills_to_develop.length : 0, // Number of skills
-    (user.mentorship_style && Array.isArray(user.mentorship_style)) ? user.mentorship_style.length : 0, // Preferred mentorship styles
-    (user.interests && Array.isArray(user.interests)) ? user.interests.length : 0, // Interests
-    user.feedback_openness === "Very Open" ? 1 : 0, // Feedback openness
-  ];
+const calculateScore = (mentee: any, mentor: any): number => {
+  let score = 0;
+
+  if (mentor.industry_experience.includes(mentee.industry)) {
+    score += 3;
+  }
+
+  score += getOverlapScore(mentor.skills_offered, mentee.skills_to_develop, 2);
+  score += getOverlapScore(mentor.challenges_faced, mentee.expected_challenges, 1);
+  score += getOverlapScore(mentor.mentorship_style, mentee.mentorship_style, 1);
+  score += getOverlapScore(mentor.interests, mentee.interests, 1);
+  score += getOverlapScore(mentor.mentorship_motivation, mentee.mentorship_goals, 2);
+
+  return score;
 };
 
-// Find Top N Matches using KNN
-const findTopMentorsKNN = (mentee: any, mentors: any[], k = 3) => {
-  let menteeVector = createFeatureVector(mentee);
-  
-  let scores = mentors.map((mentor) => ({
-    mentor,
-    score: cosineSimilarity(menteeVector, createFeatureVector(mentor)),
-  }));
+export async function POST(req: NextRequest) {
+  await connectMongoDB();
 
-  // Sort mentors by highest similarity score
-  scores.sort((a, b) => b.score - a.score);
+  const { student_id } = await req.json();
 
-  return scores.slice(0, k); // Return top K matches
-};
+  if (!student_id) {
+    return NextResponse.json(
+      { error: 'Please provide student_id in the request body.' },
+      { status: 400 }
+    );
+  }
 
-// API Route
-export async function POST(req: Request) {
   try {
-    await connectMongoDB();
-
-    const { student_id } = await req.json();
-    if (!student_id) {
-      return NextResponse.json({ message: "Student ID is required" }, { status: 400 });
-    }
-
-    // Fetch mentee details
     const mentee = await Mentee.findOne({ student_id });
     if (!mentee) {
-      return NextResponse.json({ message: "Mentee not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Mentee not found.' }, { status: 404 });
     }
 
-    // Fetch all mentors
-    const mentors = await Mentor.find();
-    if (mentors.length === 0) {
-      return NextResponse.json({ message: "No mentors available" }, { status: 404 });
+    const mentors = await Mentor.find({});
+
+    type MentorType = {
+      _id: mongoose.Types.ObjectId;
+      name: string;
+      email: string;
+      company: string;
+      job_role: string;
+      industry_experience: string[];
+      skills_offered: string[];
+      challenges_faced: string[];
+      mentorship_style: string[];
+      feedback_openness: string;
+      interests: string[];
+      mentorship_motivation: string[];
+    };
+
+    let bestMatch: MentorType | null = null;
+    let highestScore = -1;
+
+    mentors.forEach((mentorDoc) => {
+      const mentor = mentorDoc.toObject() as MentorType;
+      const score = calculateScore(mentee, mentor);
+      if (score > highestScore) {
+        highestScore = score;
+        bestMatch = mentor;
+      }
+    });
+
+    if (!bestMatch) {
+      return NextResponse.json({ error: 'No suitable mentor found.' }, { status: 404 });
     }
 
-    // Find top 3 mentor matches
-    const topMentors = findTopMentorsKNN(mentee, mentors, 3);
-
-    return NextResponse.json({ mentee, bestMatches: topMentors }, { status: 200 });
+    return NextResponse.json({
+      mentee: {
+        id: mentee._id,
+        student_id: mentee.student_id,
+        name: mentee.name,
+      },
+      bestMentor: {
+        id: bestMatch._id,
+        name: bestMatch.name,
+        email: bestMatch.email,
+        company: bestMatch.company,
+        job_role: bestMatch.job_role,
+      },
+      compatibilityScore: highestScore,
+    });
   } catch (error) {
-    console.error("Error in matching:", error);
-    return NextResponse.json({ message: "Server Error", error }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: 'Server error during matching process.' }, { status: 500 });
   }
 }
