@@ -81,18 +81,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      mentee: {
-        id: mentee._id,
-        student_id: mentee.student_id,
-        name: mentee.name,
-      },
-      bestMentor: {
-        id: bestMatch._id,
-        name: bestMatch.name,
-        email: bestMatch.email,
-        company: bestMatch.company,
-        job_role: bestMatch.job_role,
-      },
+      mentee,
+      bestMentor: bestMatch,
       compatibilityScore: highestScore,
     });
   } catch (error) {

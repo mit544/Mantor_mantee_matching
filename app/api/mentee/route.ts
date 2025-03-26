@@ -19,3 +19,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    await connectMongoDB();
+    const mentees = await Mentee.find();
+    return NextResponse.json({ mentees }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching mentees:", error);
+    return NextResponse.json({ message: "Failed to fetch mentees." }, { status: 500 });
+  }
+}
