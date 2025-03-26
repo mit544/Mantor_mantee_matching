@@ -1,74 +1,60 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "@/lib/mongodb";
-import bcrypt from "bcrypt";
-import User from "@/models/user";
+import User from "@/models/user"; // adjust path to your model
 import connectMongoDB from "@/lib/mongodb";
+import bcrypt from "bcryptjs";
 
 export const authOptions = {
-  adapter: MongoDBAdapter(clientPromise),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "example@example.com" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         await connectMongoDB();
 
-        const user = await User.findOne({ email: credentials?.email });
-        if (!user) {
-          throw new Error("No user found with this email.");
-        }
+        const user = await User.findOne({ email: credentials.email });
+        if (!user) throw new Error("User not found");
 
-        const isPasswordValid = await bcrypt.compare(credentials!.password, user.password);
-        if (!isPasswordValid) {
-          throw new Error("Incorrect password.");
-        }
-
+        const isMatch = await bcrypt.compare(credentials.password, user.password);
+        if (!isMatch) throw new Error("Invalid password");
+        
         return {
-          id: user._id.toString(),
-          name: user.name,
+          id: user._id,
           email: user.email,
-          role: user.role,
+          role: user.role, // ⭐ include role here
         };
       },
     }),
   ],
   callbacks: {
-    async session({ session, token }: any) {
-      if (session?.user) {
-        session.user.id = token.sub;
-        session.user.role = token.role;
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = user.role; // attach role to token
+        console.log(user.role);
       }
       return token;
     },
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
+    async session({ session, token }) {
+      session.user.role = token.role; // make role available in session
+      return session;
+    },
+    async redirect({ url, baseUrl, token }) {
+      // 🔁 Role-based redirects
+      if (token?.role === "admin") return `${baseUrl}/admin`;
+      if (token?.role === "mentor") return `${baseUrl}/mentor`;
+      if (token?.role === "mentee") 
+        console.log('mentee') 
+        return `${baseUrl}/mentee`;
+      return baseUrl;
+    },
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/login",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
