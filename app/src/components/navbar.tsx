@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import "../styles/globals.css";
 import Image from "next/image";
@@ -6,10 +7,31 @@ import { Button } from "@heroui/button";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
+import LoginPopup from "./login_popup";
+import ForgetPasswordPopup from "./forget_password_popup";
+import SignUpPopup from "./sign_up";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false); // State for LoginPopup
+  const [showForgetPasswordPopup, setShowForgetPasswordPopup] = useState(false); // State for ForgetPasswordPopup
+  const [showSignUpPopup, setShowSignUpPopup] = useState(false); // State for SignUpPopup
+
+  const handleResetPassword = () => {
+    setShowLoginPopup(false);
+    setShowForgetPasswordPopup(true); 
+  };
+
+  const handleAlreadyAccount = () => {
+    setShowLoginPopup(true);
+    setShowSignUpPopup(false); 
+  }
+
+  const handleNewToMentorSync = () => {
+    setShowLoginPopup(false);
+    setShowSignUpPopup(true); 
+  }
 
   return (
     <>
@@ -30,7 +52,7 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <ul className="hidden md:flex items-center space-x-6">
           {["/test_mentee", "/test_mentor", "/test_match"].map((route, index) => {
-            const labels = ["Mentee", "Mantor", "Admin"];
+            const labels = ["Mentee", "Mentor", "Admin"];
             return (
               <li key={index}>
                 <Link
@@ -81,14 +103,41 @@ export default function Navbar() {
 
         {/* Login & Signup Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button className="bg-primary text-background text-md shadow-lg shadow-neutral-400 hover:shadow-neutral-600 delay-20">
+          <Button
+            onPress={() => setShowLoginPopup(true)}
+            className="bg-primary text-background text-md shadow-lg shadow-neutral-400 hover:shadow-neutral-600 delay-20"
+          >
             Login
           </Button>
-          <Button className="bg-primary text-background text-md shadow-lg shadow-neutral-400 hover:shadow-neutral-600 delay-20">
+          <Button
+            onPress={() => setShowSignUpPopup(true)}
+            className="bg-primary text-background text-md shadow-lg shadow-neutral-400 hover:shadow-neutral-600 delay-20"
+          >
             Signup
           </Button>
         </div>
       </nav>
+
+      {/* Login Popup */}
+      <LoginPopup
+        showPopup={showLoginPopup}
+        setShowPopup={setShowLoginPopup}
+        ForgetPassLink={handleResetPassword}
+        NewToMentorSync={handleNewToMentorSync}
+      />
+
+      {/* Forget Password Popup */}
+      <ForgetPasswordPopup
+        showForgetPassPopup={showForgetPasswordPopup}
+        setForgetPassShowPopup={setShowForgetPasswordPopup}
+      />
+
+      {/* Sign Up Popup */}
+      <SignUpPopup
+        showPopup={showSignUpPopup}
+        setShowPopup={setShowSignUpPopup}
+        AlreadyAccountLink={handleAlreadyAccount}
+      />
     </>
   );
 }

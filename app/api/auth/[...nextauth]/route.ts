@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import User from "@/models/user"; // adjust path to your model
+import User from "@/models/user";
 import connectMongoDB from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 
@@ -43,11 +43,11 @@ export const authOptions = {
     },
     async redirect({ url, baseUrl, token }) {
       // 🔁 Role-based redirects
-      if (token?.role === "admin") return `${baseUrl}/admin`;
-      if (token?.role === "mentor") return `${baseUrl}/mentor`;
+      if (token?.role === "admin") return `${baseUrl}/test_match`;
+      if (token?.role === "mentor") return `${baseUrl}/test_mentor`;
       if (token?.role === "mentee") 
         console.log('mentee') 
-        return `${baseUrl}/mentee`;
+        return `${baseUrl}/test_mentee`;
       return baseUrl;
     },
   },

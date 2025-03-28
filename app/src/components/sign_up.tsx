@@ -1,42 +1,46 @@
 "use client";
+
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUserPlus } from "react-icons/fa";
 import { Button } from "@heroui/button";
 import Image from "next/image";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 
-export default function LoginPopup({
+
+export default function SignUpPopup({
   showPopup,
   setShowPopup,
-  ForgetPassLink,
-  NewToMentorSync,
+  AlreadyAccountLink,
 }: {
   showPopup: boolean;
   setShowPopup: (value: boolean) => void;
-  ForgetPassLink: () => void;
-  NewToMentorSync: () => void;
+  AlreadyAccountLink: () => void;
 }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: true,
-      callbackUrl: "/",
-    });
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    if (res?.error) {
-      setError("Invalid email or password");
-    } else {
-      setError("");
-      setShowPopup(false);
+      if (res.ok) {
+        setError("");
+        setShowPopup(false);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Failed to sign up. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -59,7 +63,7 @@ export default function LoginPopup({
           className="mx-auto mb-2"
         />
         <h4 className="text-lg text-center text-text pb-9">
-          Welcome Back to MentorSync
+          Create Your MentorSync Account
         </h4>
         <button
           className="absolute top-2 right-4 text-xl font-bold text-text hover:text-red-600"
@@ -67,8 +71,18 @@ export default function LoginPopup({
         >
           ×
         </button>
-        
-        <form onSubmit={handleLogin} className="space-y-4">
+
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div>
+            <label className="block text-sm text-text mb-1">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
           <div>
             <label className="block text-sm text-text mb-1">Email</label>
             <input
@@ -96,21 +110,12 @@ export default function LoginPopup({
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          <div className="text-right">
-            <button
-              type="button"
-              onClick={ForgetPassLink}
-              className="text-sm text-primary hover:underline"
-            >
-              Forgot Password?
-            </button>
-          </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <Button
             type="submit"
             className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
           >
-            Sign In
+            Sign Up
           </Button>
 
           <div className="flex items-center my-4">
@@ -122,9 +127,9 @@ export default function LoginPopup({
           <Button
             type="button"
             className="w-full bg-background text-primary py-2 rounded-lg font-semibold hover:opacity-90 transition shadow-md"
-            onPress={NewToMentorSync}
+            onPress={AlreadyAccountLink}
           >
-           <FaUserPlus /> New to MentorSync?
+          <FaUser />  Already have an account?
           </Button>
         </form>
       </div>

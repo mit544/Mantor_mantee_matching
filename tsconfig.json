@@ -22,6 +22,6 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/lib/matchAlgorithm.js", "app/backend/models/mentor.js", "app/backend/models/mentee.js", "app/lib/mongodb.ts", "app/api/mentor/route.js", "app/api/match/route.ts", "app/api/mantee/route.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/lib/matchAlgorithm.js", "app/backend/models/mentor.js", "app/backend/models/mentee.js", "app/lib/mongodb.ts", "app/api/mentor/route.js", "app/api/match/route.ts", "app/api/mantee/route.js", "app/src/components/forget_password_popup.tsx"],
   "exclude": ["node_modules"]
 }
