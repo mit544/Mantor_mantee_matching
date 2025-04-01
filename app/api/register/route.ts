@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import User from "@/models/user";
 import connectMongoDB from "@/lib/mongodb";
+import User from "@/models/user"; // <-- Your base user model
 
 export async function POST(req: Request) {
-  const { email, password, role } = await req.json();
+  const { name, email, password, role } = await req.json();
 
-  if (!email || !password) {
+  if (!name || !email || !password || !role) {
     return NextResponse.json({ message: "Missing fields" }, { status: 400 });
   }
 
@@ -20,10 +20,14 @@ export async function POST(req: Request) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
+    name,
     email,
     password: hashedPassword,
-    role: role || "mentee",
+    role: role.toLowerCase(),
   });
 
-  return NextResponse.json({ message: "User registered", user: newUser }, { status: 201 });
+  return NextResponse.json(
+    { message: "User registered", user: { name: newUser.name, email: newUser.email, role: newUser.role } },
+    { status: 201 }
+  );
 }

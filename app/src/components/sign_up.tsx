@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaUserPlus } from "react-icons/fa";
-import { Button } from "@heroui/button";
+import { FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
 import Image from "next/image";
-import { FaUser } from "react-icons/fa";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPopup({
   showPopup,
@@ -19,28 +26,100 @@ export default function SignUpPopup({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [role, setRole] = useState("Select Role");
+
+
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
+    // Validate role selection
+    if (role === "Select Role") {
+      toast.error("Please select a role!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
     try {
-      const res = await fetch("/api/signup", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        setError("");
+        toast.success("Account created successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
         setShowPopup(false);
+
+
+        // console.log("User role:", data.user.role);
+
+        
+        if (data.user.role === "mentor") {
+          router.push("/mentor/profile_setup");
+        } else if (data.user.role === "mentee") {
+          router.push("/mentee/profile_setup");
+        } else {
+          console.error("Invalid role:", data.user.role);
+        }
       } else {
+
         const data = await res.json();
-        setError(data.error || "Failed to sign up. Please try again.");
+        toast.error(data.message || "Failed to sign up. Please try again.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 
@@ -110,26 +189,73 @@ export default function SignUpPopup({
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          <div className="relative">
+            <label className="block text-sm text-text mb-1">
+              Confirm Password
+            </label>
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-3 top-6 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          <div>
+            <Dropdown backdrop="blur" className="required">
+              <DropdownTrigger>
+                <Button variant="bordered" className="w-full">
+                  {role}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Select Role"
+                variant="faded"
+                className="bg-white shadow-lg rounded-lg max-h-40 overflow-y-auto px-2 py-2 shadow-slate-300"
+              >
+                <DropdownItem
+                  key="mentee"
+                  className="py-2 px-8 hover:bg-primary hover:text-white rounded-md cursor-pointer transition-all"
+                  onPress={() => setRole("Mentee")}
+                >
+                  Mentee
+                </DropdownItem>
+                <DropdownItem
+                  key="mentor"
+                  className="py-2 px-8 hover:bg-primary hover:text-white rounded-md cursor-pointer transition-all"
+                  onPress={() => setRole("Mentor")}
+                >
+                  Mentor
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+
           <Button
             type="submit"
             className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
           >
             Sign Up
           </Button>
-
           <div className="flex items-center my-4">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="px-4 text-sm text-gray-500">OR</span>
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
-
           <Button
             type="button"
             className="w-full bg-background text-primary py-2 rounded-lg font-semibold hover:opacity-90 transition shadow-md"
             onPress={AlreadyAccountLink}
           >
-          <FaUser />  Already have an account?
+            <FaUser /> Already have an account?
           </Button>
         </form>
       </div>

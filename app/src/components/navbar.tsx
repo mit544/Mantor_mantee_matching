@@ -51,8 +51,8 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex items-center space-x-6">
-          {["/test_mentee", "/test_mentor", "/test_match"].map((route, index) => {
-            const labels = ["Mentee", "Mentor", "Admin"];
+          {["/", "/about_us", "/contact_us"].map((route, index) => {
+            const labels = ["Home", "About Us", "Contact Us"];
             return (
               <li key={index}>
                 <Link
