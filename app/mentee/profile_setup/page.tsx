@@ -135,6 +135,12 @@ export default function MenteeFormPage() {
     mentorship_goals: "",
   });
 
+  const [step, setStep] = useState(1);
+  const steps = ["General Info", "Preferences", "Goals"];
+
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
+
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev: any) => ({
@@ -188,8 +194,8 @@ export default function MenteeFormPage() {
           <option key={opt} value={opt} />
         ))}
       </datalist>
-      <div className="flex flex-wrap gap-2">
-        {formData[field].map((item: string) => (
+      <div className="flex flex-wrap gap-2 mt-1">
+        {formData[field].map((item) => (
           <span
             key={item}
             className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2 shadow"
@@ -230,124 +236,117 @@ export default function MenteeFormPage() {
     <>
       <Navbar />
       <div className="max-w-2xl mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-4">Add New Mentee</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="student_id"
-            placeholder="Student ID"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="name"
-            placeholder="Name"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-
-          <select
-            name="course"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Course</option>
-            {courseOptions.map((course) => (
-              <option key={course} value={course}>
-                {course}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="course_domain"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Course Domain</option>
-            {courseDomainOptions.map((domain) => (
-              <option key={domain} value={domain}>
-                {domain}
-              </option>
-            ))}
-          </select>
-
-          {renderMultiSelect(
-            "industry_interest",
-            industryOptions,
-            "Industry Interests"
-          )}
-          {renderMultiSelect(
-            "skills_to_develop",
-            skillsOptions,
-            "Skills to Develop"
-          )}
-          {renderMultiSelect(
-            "mentorship_style",
-            mentorshipStyleOptions,
-            "Mentorship Style"
-          )}
-          {renderMultiSelect("interests", interestOptions, "Interests")}
-          {renderMultiSelect(
-            "mentorship_goals",
-            goalOptions,
-            "Mentorship Goals"
-          )}
-
-          <label className="block">Feedback Openness</label>
-          <select
-            name="feedback_openness"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Feedback Openness</option>
-            {feedbackOptions.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-
-          <input
-            name="short_term_goals"
-            placeholder="Short Term Goals (comma separated)"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="long_term_goals"
-            placeholder="Long Term Goals (comma separated)"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="expected_challenges"
-            placeholder="Expected Challenges"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="adjustments_required"
-            placeholder="Adjustments Required (if any)"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-
-          <label className="flex items-center gap-2">
+        <h2 className="text-2xl font-bold mb-4">Mentee Profile Setup</h2>
+        {step === 1 && (
+          <div className="space-y-4">
             <input
-              type="checkbox"
-              name="is_international_student"
+              name="student_id"
+              placeholder="Student ID"
               onChange={handleChange}
+              className="w-full border p-2 rounded"
             />
-            International Student?
-          </label>
+            <input
+              name="name"
+              placeholder="Name"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            />
+            <select
+              name="course"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Select Course</option>
+              {/* map course options */}
+            </select>
+            <select
+              name="course_domain"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Select Domain</option>
+              {/* map domain options */}
+            </select>
+            <button
+              onClick={nextStep}
+              className="bg-primary text-white px-4 py-2 rounded"
+            >
+              Next
+            </button>
+          </div>
+        )}
 
-          <button
-            type="submit"
-            className="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90"
-          >
-            Submit Mentee
-          </button>
-        </form>
+        {step === 2 && (
+          <div className="space-y-4">
+            {renderMultiSelect(
+              "industry_interest",
+              industryOptions,
+              "Industry Interests"
+            )}
+            {renderMultiSelect(
+              "skills_to_develop",
+              skillsOptions,
+              "Skills to Develop"
+            )}
+            {renderMultiSelect(
+              "mentorship_style",
+              mentorshipStyleOptions,
+              "Mentorship Style"
+            )}
+            {renderMultiSelect("interests", interestOptions, "Interests")}
+            {renderMultiSelect(
+              "mentorship_goals",
+              goalOptions,
+              "Mentorship Goals"
+            )}
+            <button onClick={prevStep} className="px-4 py-2 rounded border">
+              Back
+            </button>
+            <button
+              onClick={nextStep}
+              className="bg-primary text-white px-4 py-2 rounded"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              name="short_term_goals"
+              placeholder="Short Term Goals"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            />
+            <input
+              name="long_term_goals"
+              placeholder="Long Term Goals"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            />
+            <input
+              name="expected_challenges"
+              placeholder="Expected Challenges"
+              onChange={handleChange}
+              className="w-full border p-2 rounded"
+            />
+            <button
+              onClick={prevStep}
+              type="button"
+              className="px-4 py-2 rounded border"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              className="bg-primary text-white px-4 py-2 rounded"
+            >
+              Submit
+            </button>
+          </form>
+        )}
+
         {message && <p className="mt-4 text-center text-lg">{message}</p>}
       </div>
       <Footer />

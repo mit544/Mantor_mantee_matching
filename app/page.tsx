@@ -5,13 +5,13 @@ import { Button } from "@heroui/button"; // ✅ Fixed: assume Button is default 
 import { motion } from "framer-motion";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
+import usesession from "next-auth/react";
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
       <div className="px-4 md:px-12 py-20 max-w-7xl mx-auto">
-        {/* Hero Section */}
         <motion.section
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,7 +39,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Side Floating Cards */}
           <div className="absolute left-0 bottom-0 transform -translate-y-1/2 hidden md:block z-10">
             <div className="bg-white shadow-xl rounded-2xl p-5 w-64 text-left border border-gray-100">
               <p className="font-semibold text-primary">Become a Mentor</p>
@@ -63,7 +62,6 @@ export default function HomePage() {
             </div>
           </div>
         </motion.section>
-        {/* Stats Bar */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-12 text-center border-t border-gray-200">
           <div>
             <p className="text-3xl font-bold text-primary">+24%</p>
@@ -83,7 +81,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Feature Blocks */}
         <section className="py-16 bg-gray-50 text-center">
           <h2 className="text-sm uppercase text-primary tracking-wider mb-2">
             Smart + Fast
@@ -127,7 +124,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Integration / Tools Section */}
         <section className="py-20 bg-primary text-white text-center">
           <h2 className="text-sm uppercase tracking-wider mb-2">
             Modern and Flexible
@@ -181,7 +177,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Sub-Feature Summary */}
         <section className="py-16 bg-gray-100 text-center">
           <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div>
@@ -214,7 +209,6 @@ export default function HomePage() {
         </section>
 
         <div className="mt-24 px-4 md:px-12 max-w-7xl mx-auto space-y-16">
-          {/* Resources Heading */}
           <section className="text-center space-y-4">
             <p className="text-xs font-semibold tracking-widest text-emerald-600 uppercase">
               Resources
@@ -228,7 +222,6 @@ export default function HomePage() {
             </p>
           </section>
 
-          {/* Resource Cards */}
           <section className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200">
               <Image
@@ -292,7 +285,6 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Call to Action */}
           <section className="bg-primary text-white rounded-2xl p-10 text-center space-y-6">
             <p className="text-xs uppercase tracking-widest text-background font-semibold">
               Join the Best

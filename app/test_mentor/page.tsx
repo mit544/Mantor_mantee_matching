@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const industryOptions = [
   "Technology",
@@ -122,7 +125,7 @@ export default function MentorFormPage() {
     adjustments_required: "",
   });
 
-  const [message, setMessage] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
   const [tagInputs, setTagInputs] = useState({
     industry_experience: "",
     expertise_courses: "",
@@ -132,62 +135,72 @@ export default function MentorFormPage() {
     mentorship_motivation: "",
   });
 
-  const handleChange = (e: any) => {
+  const progressPercentage = (currentStep / 3) * 100;
+
+  useEffect(() => {
+    toast.success("Welcome, You are logged in as a Mentor!!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleTagAdd = (field: string, value: string) => {
+  const handleTagAdd = (field, value) => {
     if (!value.trim()) return;
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field]
-        : [...prev[field], value],
+      [field]: prev[field].includes(value) ? prev[field] : [...prev[field], value],
     }));
   };
 
-  const handleTagRemove = (field: string, value: string) => {
+  const handleTagRemove = (field, value) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((item: string) => item !== value),
+      [field]: prev[field].filter((item) => item !== value),
     }));
   };
 
-  const renderMultiSelect = (
-    field: keyof typeof formData,
-    options: string[],
-    label: string
-  ) => (
-    <div className="mb-4">
-      <label className="block font-semibold mb-1">{label}</label>
+  const renderMultiSelectInput = (field, options, label) => (
+    <div className="mb-6">
+      <label className="block font-semibold mb-2 text-gray-700">{label}</label>
       <input
-        className="w-full border p-2 rounded mb-2"
+        type="text"
+        className="w-full border p-3 rounded mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
         placeholder="Type and press Enter"
-        list={`${field}-options`}
+        list={`${field}-list`}
         value={tagInputs[field] || ""}
-        onChange={(e) =>
-          setTagInputs((prev) => ({ ...prev, [field]: e.target.value }))
-        }
+        onChange={(e) => setTagInputs((prev) => ({ ...prev, [field]: e.target.value }))}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && tagInputs[field]) {
+          if (e.key === "Enter" && tagInputs[field].trim() !== "") {
             e.preventDefault();
-            handleTagAdd(field, tagInputs[field]);
+            const value = tagInputs[field].trim();
+            if (!formData[field].includes(value)) {
+              setFormData((prev) => ({
+                ...prev,
+                [field]: [...prev[field], value],
+              }));
+            }
             setTagInputs((prev) => ({ ...prev, [field]: "" }));
           }
         }}
       />
-      <datalist id={`${field}-options`}>
+      <datalist id={`${field}-list`}>
         {options.map((opt) => (
           <option key={opt} value={opt} />
         ))}
       </datalist>
       <div className="flex flex-wrap gap-2">
-        {formData[field].map((item: string) => (
-          <span
-            key={item}
-            className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2 shadow"
-          >
+        {formData[field].map((item) => (
+          <span key={item} className="bg-gray-200 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
             {item}
             <button
               type="button"
@@ -202,9 +215,48 @@ export default function MentorFormPage() {
     </div>
   );
 
-  const handleSubmit = async (e: any) => {
+  const isStepComplete = () => {
+    if (currentStep === 1) {
+      return formData.name && formData.email && formData.company && formData.job_role;
+    }
+    if (currentStep === 2) {
+      return (
+        formData.industry_experience.length > 0 &&
+        formData.expertise_courses.length > 0 &&
+        formData.skills_offered.length > 0 &&
+        formData.mentorship_style.length > 0
+      );
+    }
+    if (currentStep === 3) {
+      return (
+        formData.interests.length > 0 &&
+        formData.mentorship_motivation.length > 0 &&
+        formData.feedback_openness &&
+        formData.challenges_faced &&
+        formData.adjustments_required
+      );
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!isStepComplete()) {
+      toast.error("Please fill out all required fields before proceeding.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
     try {
       const res = await fetch("/api/mentor", {
         method: "POST",
@@ -212,103 +264,155 @@ export default function MentorFormPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setMessage(
-        res.ok ? "✅ Mentor added successfully!" : "❌ " + data.message
-      );
+      if (res.ok) {
+        toast.success("✅ Mentor added successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+      } else {
+        toast.error("❌ " + data.message, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+      }
     } catch {
-      setMessage("❌ Failed to add mentor.");
+      toast.error("❌ Failed to add mentor.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     }
+  };
+
+  const stepVariants = {
+    initial: { opacity: 0, x: -50 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 50 },
   };
 
   return (
     <>
       <Navbar />
-      <div className="max-w-2xl mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-4">Add New Mentor</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="name"
-            placeholder="Name"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="company"
-            placeholder="Company"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="job_role"
-            placeholder="Job Role"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+      <ToastContainer />
+      <div className="max-w-3xl mx-auto p-8 bg-white shadow-md rounded-lg">
+        <h2 className="text-3xl font-bold mb-6 text-center text-primary">Add New Mentor</h2>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+          <div
+            className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
 
-          {renderMultiSelect(
-            "industry_experience",
-            industryOptions,
-            "Industry Experience"
-          )}
-          {renderMultiSelect(
-            "expertise_courses",
-            expertiseOptions,
-            "Expertise Courses"
-          )}
-          {renderMultiSelect("skills_offered", skillsOptions, "Skills Offered")}
-          {renderMultiSelect(
-            "mentorship_style",
-            mentorshipStyleOptions,
-            "Mentorship Style"
-          )}
-          {renderMultiSelect("interests", interestOptions, "Interests")}
-          {renderMultiSelect(
-            "mentorship_motivation",
-            motivationOptions,
-            "Mentorship Motivation"
-          )}
-
-          <label className="block">Feedback Openness</label>
-          <select
-            name="feedback_openness"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.div
+            key={currentStep}
+            variants={stepVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.3 }}
           >
-            <option value="">Select Feedback Openness</option>
-            {feedbackOptions.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <input
+                  name="name"
+                  placeholder="Name"
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded"
+                />
+                <input
+                  name="email"
+                  placeholder="Email"
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded"
+                />
+                <input
+                  name="company"
+                  placeholder="Company"
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded"
+                />
+                <input
+                  name="job_role"
+                  placeholder="Job Role"
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded"
+                />
+              </div>
+            )}
 
-          <input
-            name="challenges_faced"
-            placeholder="Challenges Faced"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            name="adjustments_required"
-            placeholder="Adjustments Required (if any)"
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+            {currentStep === 2 && (
+              <div>
+                {renderMultiSelectInput("industry_experience", industryOptions, "Industry Experience")}
+                {renderMultiSelectInput("expertise_courses", expertiseOptions, "Expertise Courses")}
+                {renderMultiSelectInput("skills_offered", skillsOptions, "Skills Offered")}
+                {renderMultiSelectInput("mentorship_style", mentorshipStyleOptions, "Mentorship Style")}
+              </div>
+            )}
 
-          <button
-            type="submit"
-            className="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90"
-          >
-            Submit Mentor
-          </button>
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                {renderMultiSelectInput("interests", interestOptions, "Interests")}
+                {renderMultiSelectInput("mentorship_motivation", motivationOptions, "Mentorship Motivation")}
+                <label className="block">Feedback Openness</label>
+                <select
+                  name="feedback_openness"
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                >
+                  <option value="">Select Feedback Openness</option>
+                  {feedbackOptions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  name="challenges_faced"
+                  placeholder="Challenges Faced"
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                />
+                <input
+                  name="adjustments_required"
+                  placeholder="Adjustments Required (if any)"
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                />
+              </div>
+            )}
+          </motion.div>
+
+          <div className="flex justify-between">
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={handlePrevious}
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+              >
+                Previous
+              </button>
+            )}
+            {currentStep < 3 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="bg-primary text-white py-2 px-4 rounded hover:bg-opacity-90"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="bg-primary text-white py-2 px-4 rounded hover:bg-opacity-90"
+              >
+                Submit
+              </button>
+            )}
+          </div>
         </form>
-        {message && <p className="mt-4 text-center text-lg">{message}</p>}
       </div>
       <Footer />
     </>

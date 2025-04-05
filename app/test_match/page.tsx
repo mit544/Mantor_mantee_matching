@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function AdminMatchPage() {
   const [mentees, setMentees] = useState<any[]>([]);
@@ -11,6 +12,16 @@ export default function AdminMatchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+
+    toast.success("Welcome, You are looged in as an Admin!!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
     const fetchMentees = async () => {
       const res = await fetch("/api/mentee");
       const data = await res.json();

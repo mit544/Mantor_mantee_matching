@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongodb";
 import Mentee from "@/models/mentee";
+import MenteeOptions from "@/models/menteeOptions";
 
+// This route is for creating a new mentee
 export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
@@ -20,6 +22,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// This route is for fetching all mentees
 export async function GET() {
   try {
     await connectMongoDB();

@@ -33,6 +33,11 @@ export default function Navbar() {
     setShowSignUpPopup(true); 
   }
 
+  const afterSignUp = () => {
+    setShowSignUpPopup(false);  
+    setShowLoginPopup(true);
+  }
+
   return (
     <>
       <nav className="bg-background text-text w-full h-20 rounded-b-2xl px-6 md:px-12 shadow-md flex items-center justify-between">
@@ -137,6 +142,7 @@ export default function Navbar() {
         showPopup={showSignUpPopup}
         setShowPopup={setShowSignUpPopup}
         AlreadyAccountLink={handleAlreadyAccount}
+        openLoginPopup={afterSignUp}
       />
     </>
   );

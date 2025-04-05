@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongodb";
 import Mentor from "@/models/mentor";
 
+// This route is for creating a new mentor
 export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// This route is for fetching all mentors
 export async function GET() {
   try {
     await connectMongoDB();
@@ -31,3 +33,5 @@ export async function GET() {
     return NextResponse.json({ message: "Failed to fetch mentors." }, { status: 500 });
   }
 }
+
+

@@ -18,10 +18,12 @@ export default function SignUpPopup({
   showPopup,
   setShowPopup,
   AlreadyAccountLink,
+  openLoginPopup,
 }: {
   showPopup: boolean;
   setShowPopup: (value: boolean) => void;
   AlreadyAccountLink: () => void;
+  openLoginPopup: () => void;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -75,7 +77,7 @@ export default function SignUpPopup({
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("Account created successfully!", {
+        toast.success("Account created successfully! Now you can login to you account", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: true,
@@ -84,19 +86,7 @@ export default function SignUpPopup({
           draggable: true,
           theme: "colored",
         });
-        setShowPopup(false);
-
-
-        // console.log("User role:", data.user.role);
-
-        
-        if (data.user.role === "mentor") {
-          router.push("/mentor/profile_setup");
-        } else if (data.user.role === "mentee") {
-          router.push("/mentee/profile_setup");
-        } else {
-          console.error("Invalid role:", data.user.role);
-        }
+        openLoginPopup()
       } else {
 
         const data = await res.json();
