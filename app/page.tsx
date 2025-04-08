@@ -5,7 +5,7 @@ import { Button } from "@heroui/button"; // ✅ Fixed: assume Button is default 
 import { motion } from "framer-motion";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
-import usesession from "next-auth/react";
+// import usesession from "next-auth/react";
 
 export default function HomePage() {
   return (

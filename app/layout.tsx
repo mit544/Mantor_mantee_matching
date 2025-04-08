@@ -1,9 +1,13 @@
+// "use client";
+
 import type { Metadata } from "next";
 import "./src/styles/globals.css";
 import { Fira_Sans, Kanit } from "next/font/google";
 import { ToastContainer } from "react-toastify";
-
+// import { SessionProvider } from "next-auth/react";
 import "react-toastify/dist/ReactToastify.css";
+import Providers from "./providers";
+
 export const metadata: Metadata = {
   title: "MentorMatch",
   description: "Find the best mentor for your career journey.",
@@ -32,8 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${firaSans.variable} ${kanit.variable}`}>
       <body className="font-sans">
-        {children}
-        <ToastContainer />
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

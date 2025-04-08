@@ -45,14 +45,22 @@ export default function LoginPopup({
       setError("");
       toast.success("Login successful!"); // Show success toast
 
-      // Fetch user role after successful login
+      // Fetch user role and profile completion status after successful login
       const userRes = await fetch("/api/auth/session");
       const userData = await userRes.json();
-
+      console.log("User data:", userData); 
       if (userData?.user?.role === "mentor") {
-        router.push("/test_mentor");
+        if (userData?.user?.profileCompleted === true) {
+          router.push("/mentor/dashboard");
+        } else {
+          router.push("/mentor/profile_setup");
+        }
       } else if (userData?.user?.role === "mentee") {
-        router.push("/test_mentee");
+        if (userData?.user?.profileCompleted === true) {
+          router.push("/mentee/dashboard");
+        } else {
+          router.push("/mentee/profile_setup");
+        }
       } else if (userData?.user?.role === "admin") {
         router.push("/test_match");
       } else {

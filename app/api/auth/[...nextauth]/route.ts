@@ -24,7 +24,8 @@ export const authOptions = {
         return {
           id: user._id,
           email: user.email,
-          role: user.role, // ⭐ include role here
+          role: user.role, 
+          profileCompleted: user.profileCompleted,
         };
       },
     }),
@@ -32,22 +33,39 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role; // attach role to token
-        console.log(user.role);
+        token.role = user.role;
+        token.profileCompleted = user.profileCompleted;
+
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.role = token.role; // make role available in session
+      session.user.id = token.sub; 
+      session.user.role = token.role;
+      session.user.profileCompleted = token.profileCompleted;
       return session;
     },
     async redirect({ url, baseUrl, token }) {
-      // 🔁 Role-based redirects
-      if (token?.role === "admin") return `${baseUrl}/test_match`;
-      if (token?.role === "mentor") return `${baseUrl}/test_mentor`;
-      if (token?.role === "mentee") 
-        console.log('mentee') 
-        return `${baseUrl}/test_mentee`;
+      if (token?.role) {
+        const user = await User.findById(token.sub); 
+        if (user) {
+          if (token.role === "admin") return `${baseUrl}/test_match`;
+          if (token.role === "mentor") {
+            if (user.profileSetup) {
+              return `${baseUrl}/mentor/dashboard`;
+            } else {
+              return `${baseUrl}/mentor/profile_setup`;
+            }
+          }
+          if (token.role === "mentee") {
+            if (user.profileSetup) {
+              return `${baseUrl}/mentee/dashboard`;
+            } else {
+              return `${baseUrl}/mentee/profile_setup`;
+            }
+          }
+        }
+      }
       return baseUrl;
     },
   },
