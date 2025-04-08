@@ -333,7 +333,7 @@ export default function MentorFormPage() {
     <>
       <Navbar />
       <ToastContainer />
-      <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-lg">
+      <div className="max-w-3xl mx-auto p-8 my-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-4xl font-extrabold mb-6 text-center text-primary">
           Mentor Profile Setup
         </h2>
