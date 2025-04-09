@@ -5,111 +5,13 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@heroui/button";
 
-const industryOptions = [
-  "Technology",
-  "Finance",
-  "Media",
-  "Sports",
-  "Health and Fitness",
-  "Education",
-  "Marketing",
-  "Cybersecurity",
-  "Software Development",
-  "Journalism",
-  "Coaching",
-  "Business Management",
-  "Entertainment",
-  "Other",
-];
-
-const expertiseOptions = [
-  "Accounting and Finance",
-  "Business Management",
-  "Business of Football",
-  "Sports Management",
-  "Computer Science",
-  "Cyber Security",
-  "Digital Marketing",
-  "Software Development",
-  "Digital Content Production",
-  "Sports Journalism",
-  "Sports Media and Communications",
-  "Exercise Studies",
-  "Health, Exercise and Sport",
-  "Physical Education",
-  "Sports and Exercise Science",
-  "Sports Coaching",
-  "Other",
-];
-
-const skillsOptions = [
-  "Programming",
-  "Web Development",
-  "Data Analysis",
-  "Machine Learning",
-  "Cybersecurity",
-  "Digital Marketing",
-  "Accounting",
-  "Finance Management",
-  "Journalism",
-  "Video Production",
-  "Sports Coaching",
-  "Exercise Science",
-  "Performance Analysis",
-  "Public Speaking",
-  "Leadership",
-  "Project Management",
-  "Docker",
-  "Kubernetes",
-  "Cloud Infrastructure",
-  "Other",
-];
-
-const mentorshipStyleOptions = [
-  "Hands-on guidance",
-  "Structured meetings",
-  "Occasional check-ins",
-  "Pair programming",
-  "Informal chats",
-  "Other",
-];
-
-const interestOptions = [
-  "Artificial Intelligence",
-  "Blockchain",
-  "Cloud Computing",
-  "Infrastructure as Code",
-  "Virtual Reality",
-  "Sports Nutrition",
-  "Sports Psychology",
-  "Digital Content Creation",
-  "E-commerce",
-  "Social Media",
-  "Fitness Training",
-  "Youth Sports Development",
-  "Music",
-  "Film Production",
-  "Entrepreneurship",
-  "Other",
-];
-
-const motivationOptions = [
-  "Share industry experience",
-  "Support career growth",
-  "Build talent pipeline",
-  "Networking",
-  "Develop leadership skills",
-  "Personal fulfilment",
-  "Contribute to community",
-  "Other",
-];
-
-const feedbackOptions = ["Not open", "Neutral", "Open", "Very open"];
-
+import MentorStepOne from "@/src/components/mentor/stepone";
+import MentorStepTwo from "@/src/components/mentor/steptwo";
+import MentorStepThree from "@/src/components/mentor/stepthree";
 
 export default function MentorFormPage() {
   const { data: session } = useSession();
@@ -131,16 +33,14 @@ export default function MentorFormPage() {
     adjustments_required: "",
   });
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const [tagInputs, setTagInputs] = useState({
+   const [tagInputs, setTagInputs] = useState({
     industry_experience: "",
     expertise_courses: "",
     skills_offered: "",
     mentorship_style: "",
-    interests: "",
-    mentorship_motivation: "",
-  });
-
+    });
+  
+  const [currentStep, setCurrentStep] = useState(1);
   const progressPercentage = (currentStep / 3) * 100;
 
   useEffect(() => {
@@ -181,84 +81,31 @@ export default function MentorFormPage() {
     }
   }, [message]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleFileAttach = (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev: any) => ({
+        ...prev,
+        attachedFile: file,
+      }));
+    }
   };
 
-  const handleTagAdd = (field, value) => {
-    if (!value.trim()) return;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field]
-        : [...prev[field], value],
-    }));
+  const handleStepChange = (step: number) => {
+    if (step > currentStep && !isStepComplete()) {
+      toast.error("Please complete the current section first.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+    setCurrentStep(step);
   };
-
-  const handleTagRemove = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((item) => item !== value),
-    }));
-  };
-
-  const renderMultiSelectInput = (field, options, label) => (
-    <div className="mb-6">
-      <label className="block font-semibold mb-2 text-gray-700">{label}</label>
-      <input
-        type="text"
-        className="w-full border p-3 rounded mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
-        placeholder="Type and press Enter"
-        list={`${field}-list`}
-        value={tagInputs[field] || ""}
-        onChange={(e) =>
-          setTagInputs((prev) => ({ ...prev, [field]: e.target.value }))
-        }
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && tagInputs[field].trim() !== "") {
-            e.preventDefault();
-            const value = tagInputs[field].trim();
-            if (!formData[field].includes(value)) {
-              setFormData((prev) => ({
-                ...prev,
-                [field]: [...prev[field], value],
-              }));
-            }
-            setTagInputs((prev) => ({ ...prev, [field]: "" }));
-          }
-        }}
-      />
-      <datalist id={`${field}-list`}>
-        {options.map((opt) => (
-          <option key={opt} value={opt} />
-        ))}
-      </datalist>
-      <div className="flex flex-wrap gap-2">
-        {formData[field].map((item) => (
-          <span
-            key={item}
-            className="bg-gray-200 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm"
-          >
-            {item}
-            <button
-              type="button"
-              onClick={() => handleTagRemove(field, item)}
-              className="text-red-600 font-bold"
-            >
-              ×
-            </button>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
 
   const isStepComplete = () => {
     if (currentStep === 1) {
-      return (
-        formData.name && formData.email && formData.company && formData.job_role
-      );
+      return formData.name && formData.email && formData.company && formData.job_role;
     }
     if (currentStep === 2) {
       return (
@@ -280,6 +127,73 @@ export default function MentorFormPage() {
     return true;
   };
 
+  const handleMultiSelectChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: [...prev[field], value],
+    }));
+  };
+
+  const handleMultiSelectRemove = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((item) => item !== value),
+    }));
+  };
+
+  const renderMultiSelectInput = (
+    field: keyof typeof formData,
+    options: string[],
+    label: string
+  ) => (
+    <div className="mb-6">
+      <label className="block font-semibold mb-2 text-gray-700">{label}</label>
+      <input
+        type="text"
+        className="w-full border p-3 rounded mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
+        placeholder="Type and press Enter"
+        list={`${field}-list`}
+        value={tagInputs[field] || ""}
+        onChange={(e) =>
+          setTagInputs((prev) => ({ ...prev, [field]: e.target.value }))
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && tagInputs[field].trim() !== "") {
+            e.preventDefault();
+            const value = tagInputs[field].trim();
+            if (!formData[field].includes(value)) {
+              handleMultiSelectChange(field, value);
+            }
+            setTagInputs((prev) => ({ ...prev, [field]: "" }));
+          }
+        }}
+      />
+      <datalist id={`${field}-list`}>
+        {options.map((opt) => (
+          <option key={opt} value={opt} />
+        ))}
+      </datalist>
+
+      <div className="flex flex-wrap gap-2">
+        {formData[field].map((item) => (
+          <span
+            key={item}
+            className="bg-gray-200 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm"
+          >
+            {item}
+            <button
+              type="button"
+              onClick={() => handleMultiSelectRemove(field, item)}
+              className="text-red-600 font-bold"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
   const handleNext = () => {
     if (!isStepComplete()) {
       toast.error("Please fill out all required fields before proceeding.", {
@@ -296,13 +210,12 @@ export default function MentorFormPage() {
     setCurrentStep((prev) => prev - 1);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
       const res = await fetch("/api/mentor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, user_id: session?.user_id }),
+        body: JSON.stringify({ ...formData, user_id: session?.user?.id }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -311,17 +224,16 @@ export default function MentorFormPage() {
           window.location.href = "/mentor/dashboard";
         }, 3000);
       } else {
-        setMessage(" " + data.message);
+        setMessage(data.message || "An error occurred.");
       }
     } catch {
-      toast.error("Failed to add metor.", {
+      toast.error("Failed to add mentor.", {
         position: "top-right",
         autoClose: 3000,
         theme: "colored",
       });
     }
   };
-
 
   const stepVariants = {
     initial: { opacity: 0, x: -50 },
@@ -332,7 +244,6 @@ export default function MentorFormPage() {
   return (
     <>
       <Navbar />
-      <ToastContainer />
       <div className="max-w-3xl mx-auto p-8 my-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-4xl font-extrabold mb-6 text-center text-primary">
           Mentor Profile Setup
@@ -340,50 +251,20 @@ export default function MentorFormPage() {
 
         <div className="flex justify-between text-sm font-semibold text-gray-600 mb-4">
           <span
-            className={`cursor-pointer ${
-              currentStep === 1 ? "text-primary" : "hover:text-primary"
-            }`}
-            onClick={() => {
-              if (currentStep > 1 || isStepComplete()) setCurrentStep(1);
-              else
-                toast.error("Please complete the current section first.", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  theme: "colored",
-                });
-            }}
+            className={`cursor-pointer ${currentStep === 1 ? "text-primary" : "hover:text-primary"}`}
+            onClick={() => handleStepChange(1)}
           >
             Basic Info
           </span>
           <span
-            className={`cursor-pointer ${
-              currentStep === 2 ? "text-primary" : "hover:text-primary"
-            }`}
-            onClick={() => {
-              if (currentStep > 2 || isStepComplete()) setCurrentStep(2);
-              else
-                toast.error("Please complete the current section first.", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  theme: "colored",
-                });
-            }}
+            className={`cursor-pointer ${currentStep === 2 ? "text-primary" : "hover:text-primary"}`}
+            onClick={() => handleStepChange(2)}
           >
             Experience & Skills
           </span>
           <span
-            className={`cursor-pointer ${
-              currentStep === 3 ? "text-primary" : "hover:text-primary"
-            }`}
-            onClick={() => {
-              if (currentStep > 3 || isStepComplete()) setCurrentStep(3);
-              else
-                toast.error("Please complete the current section first.", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  theme: "colored",
-                });
-            }}
+            className={`cursor-pointer ${currentStep === 3 ? "text-primary" : "hover:text-primary"}`}
+            onClick={() => handleStepChange(3)}
           >
             Preferences
           </span>
@@ -396,7 +277,7 @@ export default function MentorFormPage() {
           ></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form className="space-y-8">
           <motion.div
             key={currentStep}
             variants={stepVariants}
@@ -406,97 +287,19 @@ export default function MentorFormPage() {
             transition={{ duration: 0.3 }}
           >
             {currentStep === 1 && (
-              <div className="space-y-6">
-                <input
-                  name="name"
-                  placeholder="Name"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <input
-                  name="email"
-                  placeholder="Email"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <input
-                  name="company"
-                  placeholder="Company"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <input
-                  name="job_role"
-                  placeholder="Job Role"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <MentorStepOne formData={formData} setFormData={setFormData} />
             )}
-
             {currentStep === 2 && (
-              <div className="space-y-6">
-                {renderMultiSelectInput(
-                  "industry_experience",
-                  industryOptions,
-                  "Industry Experience"
-                )}
-                {renderMultiSelectInput(
-                  "expertise_courses",
-                  expertiseOptions,
-                  "Expertise Courses"
-                )}
-                {renderMultiSelectInput(
-                  "skills_offered",
-                  skillsOptions,
-                  "Skills Offered"
-                )}
-                {renderMultiSelectInput(
-                  "mentorship_style",
-                  mentorshipStyleOptions,
-                  "Mentorship Style"
-                )}
-              </div>
+              <MentorStepTwo formData={formData} setFormData={setFormData} renderMultiSelectInput={renderMultiSelectInput}/>
             )}
-
             {currentStep === 3 && (
-              <div className="space-y-6">
-                {renderMultiSelectInput(
-                  "interests",
-                  interestOptions,
-                  "Interests"
-                )}
-                {renderMultiSelectInput(
-                  "mentorship_motivation",
-                  motivationOptions,
-                  "Mentorship Motivation"
-                )}
-                <label className="block">Feedback Openness</label>
-                <select
-                  name="feedback_openness"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">Select Feedback Openness</option>
-                  {feedbackOptions.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  name="challenges_faced"
-                  placeholder="Challenges Faced"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <input
-                  name="adjustments_required"
-                  placeholder="Adjustments Required (if any)"
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <MentorStepThree formData={formData} setFormData={setFormData} handleChange={(e) => {
+                const { name, value, type, checked } = e.target;
+                setFormData((prev) => ({
+                  ...prev,
+                  [name]: type === "checkbox" ? checked : value,
+                }));
+              }} renderMultiSelectInput={renderMultiSelectInput} />
             )}
           </motion.div>
 
@@ -520,7 +323,7 @@ export default function MentorFormPage() {
               </Button>
             ) : (
               <Button
-                type="submit"
+                onPress={handleSubmit}
                 className="bg-primary text-white py-3 px-6 rounded-lg hover:bg-opacity-90"
               >
                 Submit

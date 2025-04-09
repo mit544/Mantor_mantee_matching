@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.1",
     "@heroui/button": "^2.2.15",
     "@heroui/react": "^2.7.5",
     "@heroui/system": "^2.4.11",
@@ -19,6 +20,7 @@
     "bcryptjs": "^3.0.2",
     "compute-cosine-similarity": "^1.1.0",
     "framer-motion": "^12.4.7",
+    "headlessui": "^0.0.0",
     "mongoose": "^8.12.1",
     "motion": "^12.6.2",
     "next": "15.1.7",
