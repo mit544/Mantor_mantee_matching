@@ -6,7 +6,6 @@ export default function Footer() {
   return (
     <footer className="bg-background text-text pt-12 pb-3 md:px-12 lg:px-24 h-44 shadow_footer">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between space-y-8 md:space-y-0">
-        {/* Left Section - Branding & Socials */}
         <div className="w-full md:w-1/4">
           <Image
             width="56"
@@ -32,9 +31,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Center Sections - Navigation */}
         <div className="w-full md:w-2/4 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-          {/* Navigation Links */}
           <div>
             <h3 className="text-lg font-semibold text-primary">Navigation</h3>
             <ul className="mt-3 space-y-2">
@@ -71,7 +68,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
             <h3 className="text-lg font-semibold text-primary">Resources</h3>
             <ul className="mt-3 space-y-2">
@@ -103,7 +99,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Company */}
           <div>
             <h3 className="text-lg font-semibold text-primary">Company</h3>
             <ul className="mt-3 space-y-2">
@@ -130,7 +125,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Trending */}
           <div>
             <h3 className="text-lg font-semibold text-primary">Trending</h3>
             <ul className="mt-3 space-y-2">
@@ -154,7 +148,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Section - Copyright & Language Selection */}
       <div className="border-t border-gray-200 mt-10 pt-6 mb-3 flex flex-col md:flex-row justify-center text-sm text-gray-500">
         <p>© MentorSync 2025. All Rights Reserved.</p>
       </div>

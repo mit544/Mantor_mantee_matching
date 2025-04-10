@@ -344,7 +344,6 @@ export default function MenteeFormPage() {
           Add New Mentee
         </h2>
 
-        {/* Progress Bar */}
         <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
           <div
             className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
@@ -494,7 +493,6 @@ export default function MenteeFormPage() {
             )}
           </div>
         </form>
-        {/* {message && <p className="mt-6 text-center text-lg text-green-600">{message}</p>} */}
       </div>
       <Footer />
     </>

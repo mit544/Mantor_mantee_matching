@@ -53,7 +53,6 @@ export default function MentorDashboard() {
       <DashboardNavbar />
       <div className="max-w-7xl mx-auto p-8">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Profile Section */}
           <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-1/4">
             <div className="text-center">
               <img
@@ -87,7 +86,6 @@ export default function MentorDashboard() {
             </div>
           </div>
 
-          {/* Main Content Section */}
           <div className="flex-1">
             <div className="bg-white shadow-md rounded-lg">
               <div className="flex border-b">
@@ -140,7 +138,6 @@ export default function MentorDashboard() {
             </div>
           </div>
 
-          {/* Sidebar Section */}
           <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-1/4">
             <h2 className="text-lg font-bold mb-4">MentorSync Updates</h2>
             <p className="text-gray-600">
@@ -152,7 +149,6 @@ export default function MentorDashboard() {
         </div>
       </div>
 
-      {/* View Profile Modal */}
       <Dialog
         open={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}

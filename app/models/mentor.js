@@ -21,16 +21,13 @@ const MentorSchema = new mongoose.Schema({
   },
 });
 
-// Static method to find mentor by user email
 MentorSchema.statics.findByUserEmail = async function (email) {
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       throw new Error("User not found");
     }
 
-    // Find the mentor by user ID
     const mentor = await this.findOne({ user_id: user._id }).populate("user_id", "name email role profileCompleted");
     if (!mentor) {
       throw new Error("Mentor not found");

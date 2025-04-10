@@ -265,20 +265,20 @@ export default function MentorFormPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("✅ Mentor added successfully!", {
+        toast.success(" Mentor added successfully!", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
         });
       } else {
-        toast.error("❌ " + data.message, {
+        toast.error(" " + data.message, {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
         });
       }
     } catch {
-      toast.error("❌ Failed to add mentor.", {
+      toast.error(" Failed to add mentor.", {
         position: "top-right",
         autoClose: 3000,
         theme: "colored",

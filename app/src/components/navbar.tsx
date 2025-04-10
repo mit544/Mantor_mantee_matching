@@ -14,9 +14,9 @@ import SignUpPopup from "./sign_up";
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showLoginPopup, setShowLoginPopup] = useState(false); // State for LoginPopup
-  const [showForgetPasswordPopup, setShowForgetPasswordPopup] = useState(false); // State for ForgetPasswordPopup
-  const [showSignUpPopup, setShowSignUpPopup] = useState(false); // State for SignUpPopup
+  const [showLoginPopup, setShowLoginPopup] = useState(false); 
+  const [showForgetPasswordPopup, setShowForgetPasswordPopup] = useState(false);
+  const [showSignUpPopup, setShowSignUpPopup] = useState(false); 
 
   const handleResetPassword = () => {
     setShowLoginPopup(false);
@@ -41,7 +41,6 @@ export default function Navbar() {
   return (
     <>
       <nav className="bg-background text-text w-full h-20 rounded-b-2xl px-6 md:px-12 shadow-md flex items-center justify-between">
-        {/* Logo */}
         <div className="flex items-center">
           <a href="#" className="pr-4 md:pr-8">
             <Image
@@ -54,7 +53,6 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Desktop Menu */}
         <ul className="hidden md:flex items-center space-x-6">
           {["/", "/about_us", "/contact_us"].map((route, index) => {
             const labels = ["Home", "About Us", "Contact Us"];
@@ -75,7 +73,6 @@ export default function Navbar() {
           })}
         </ul>
 
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden text-2xl text-primary"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -83,7 +80,6 @@ export default function Navbar() {
           {menuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Mobile Menu Dropdown */}
         {menuOpen && (
           <div className="absolute top-20 left-0 w-full bg-background shadow-md py-4 flex flex-col items-center space-y-4 md:hidden transition-all">
             {["/", "/about_us", "/contact_us"].map((route, index) => {
@@ -106,7 +102,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Login & Signup Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           <Button
             onPress={() => setShowLoginPopup(true)}
@@ -123,7 +118,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Login Popup */}
       <LoginPopup
         showPopup={showLoginPopup}
         setShowPopup={setShowLoginPopup}
@@ -131,13 +125,11 @@ export default function Navbar() {
         NewToMentorSync={handleNewToMentorSync}
       />
 
-      {/* Forget Password Popup */}
       <ForgetPasswordPopup
         showForgetPassPopup={showForgetPasswordPopup}
         setForgetPassShowPopup={setShowForgetPasswordPopup}
       />
 
-      {/* Sign Up Popup */}
       <SignUpPopup
         showPopup={showSignUpPopup}
         setShowPopup={setShowSignUpPopup}

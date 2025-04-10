@@ -176,7 +176,6 @@ export default function MenteeFormPage() {
   );
 
   const handleSubmit = async () => {
-    // e.preventDefault();
     setMessage("");
     try {
       const res = await fetch("/api/mentee", {
@@ -236,7 +235,6 @@ export default function MenteeFormPage() {
           Mentee Profile Setup
         </h2>
 
-        {/* Step Labels */}
         <div className="flex justify-between text-sm font-semibold text-gray-600 mb-2">
           <span
             className={`cursor-pointer ${
@@ -264,7 +262,6 @@ export default function MenteeFormPage() {
           </span>
         </div>
 
-        {/* Visual Progress Bar */}
         <div className="w-full bg-gray-300 rounded-full h-3 mb-6">
           <div
             className="bg-primary h-3 rounded-full transition-all duration-300 ease-in-out"

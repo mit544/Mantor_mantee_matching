@@ -2,7 +2,6 @@ import MenteeOptions from "@/models/menteeOptions";
 import connectMongoDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-// This route is for fetching and updating mentee options
 export async function GET() {
     await connectMongoDB();
     const options = await MenteeOptions.findOne();

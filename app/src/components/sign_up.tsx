@@ -39,7 +39,6 @@ export default function SignUpPopup({
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate passwords match
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!", {
         position: "top-right",
@@ -53,7 +52,6 @@ export default function SignUpPopup({
       return;
     }
 
-    // Validate role selection
     if (role === "Select Role") {
       toast.error("Please select a role!", {
         position: "top-right",

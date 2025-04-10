@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import User from "@/models/user"
 import { authOptions } from "../auth/[...nextauth]/route";
 
-// This route is for creating a new mentee
 export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
@@ -15,7 +14,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the logged-in user's MongoDB _id
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -33,7 +31,6 @@ export async function POST(req: NextRequest) {
       user_id: user._id, 
     });
 
-    // Update the user's profileCompleted field to true
     user.profileCompleted = true;
     await user.save();
 
@@ -45,7 +42,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// This route is for fetching all mentees
 export async function GET() {
   try {
     await connectMongoDB();

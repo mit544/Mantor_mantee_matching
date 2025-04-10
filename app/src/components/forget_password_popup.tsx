@@ -41,11 +41,11 @@ export default function ForgetPasswordPopup({
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 ease-in-out"
-      onClick={() => setForgetPassShowPopup(false)} // Close popup when clicking on the backdrop
+      onClick={() => setForgetPassShowPopup(false)}
     >
       <div
         className="bg-background p-8 rounded-2xl shadow-2xl w-96 relative transform transition-all duration-300 ease-in-out opacity-100 scale-100"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
+        onClick={(e) => e.stopPropagation()} 
       >
         <button
           className="absolute top-2 right-4 text-xl font-bold text-text hover:text-red-600"

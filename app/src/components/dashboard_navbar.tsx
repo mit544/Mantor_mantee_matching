@@ -6,7 +6,6 @@ import Image from "next/image";
 export default function DashboardNavbar() {
   return (
     <nav className="bg-background text-text w-full h-20 rounded-b-2xl px-6 md:px-12 shadow-md flex items-center justify-between">
-    {/* Logo */}
     <div className="flex items-center">
       <a href="#" className="pr-4 md:pr-8">
         <Image
@@ -19,7 +18,6 @@ export default function DashboardNavbar() {
       </a>
     </div>
 
-    {/* Desktop Menu */}
     <ul className="hidden md:flex items-center space-x-6 align-right">
           <li>
             <Link

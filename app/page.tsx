@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "@heroui/button"; // ✅ Fixed: assume Button is default export
+import { Button } from "@heroui/button";
 import { motion } from "framer-motion";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";

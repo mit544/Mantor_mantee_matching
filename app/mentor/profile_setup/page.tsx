@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-// import Navbar from "@/src/components/navbar";
 import DashboardNavbar from "@/src/components/dashboard_navbar";
 import Footer from "@/src/components/footer";
 import { toast } from "react-toastify";

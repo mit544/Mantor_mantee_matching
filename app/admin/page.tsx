@@ -163,7 +163,6 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
-        {/* Tabs */}
         <div className="flex space-x-6 border-b pb-2 mb-6">
           {["Overview", "Matching", "Reports", "Settings"].map((tab) => (
             <button
@@ -180,10 +179,8 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Overview Section */}
         {activeTab === "Overview" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Stats Cards */}
             <div className="bg-background shadow-md rounded-lg p-6">
               <h2 className="text-2xl font-bold">Total Users</h2>
               <p className="text-gray-500">Since last month</p>
@@ -203,13 +200,11 @@ export default function AdminDashboard() {
               <p className="text-green-500 mt-2">15.2% ↑</p>
             </div>
 
-            {/* Graph Section */}
             <div className="col-span-2 bg-background shadow-md rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">User Growth</h2>
               <Bar data={data} options={options} />
             </div>
 
-            {/* Pie Chart Section */}
             <div className="bg-background shadow-md rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">User Distribution</h2>
               <Pie data={pieData} options={pieOptions} />
@@ -217,7 +212,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Matching Section */}
         {activeTab === "Matching" && (
           <div className="bg-white shadow-md rounded p-6 mb-6">
             <label className="block mb-2 font-semibold text-gray-700">
@@ -278,7 +272,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Other Tabs Placeholder */}
         {activeTab !== "Overview" && activeTab !== "Matching" && (
           <div className="bg-background shadow-md rounded-lg p-6">
             <h2 className="text-xl font-bold">{activeTab} Content Coming Soon</h2>

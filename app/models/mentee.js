@@ -183,16 +183,13 @@ const MenteeSchema = new mongoose.Schema({
   }
 });
 
-// Static method to find mentee by user email
 MenteeSchema.statics.findByUserEmail = async function (email) {
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       throw new Error("User not found");
     }
 
-    // Find the mentee by user ID
     const mentee = await this.findOne({ user_id: user._id }).populate("user_id", "name email role profileCompleted");
     if (!mentee) {
       throw new Error("Mentee not found");

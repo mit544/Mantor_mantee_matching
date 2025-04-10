@@ -25,34 +25,33 @@ export default function LoginPopup({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
-  const router = useRouter(); // Initialize the router
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when login starts
+    setLoading(true);
 
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false, // Prevent automatic redirection
+      redirect: false,
     });
 
     if (res?.error) {
       setError("Invalid email or password");
-      toast.error("Invalid email or password"); // Show error toast
-      setLoading(false); // Stop loading on error
+      toast.error("Invalid email or password");
+      setLoading(false);
     } else {
       setError("");
-      toast.success("Login successful!"); // Show success toast
+      toast.success("Login successful!");
 
-      // Fetch user role and profile completion status after successful login
       const userRes = await fetch("/api/auth/session");
       const userData = await userRes.json();
       console.log("User data:", userData); 
       if (userData?.user?.role === "mentor") {
         if (userData?.user?.profileCompleted === true) {
-          setLoading(false); // Stop loading before redirect
+          setLoading(false);
           router.push("/mentor/dashboard");
         } else {
           setLoading(false);
@@ -75,17 +74,16 @@ export default function LoginPopup({
       }
 
       setLoading(false);
-      setShowPopup(false); // 
+      setShowPopup(false); 
     }
 
-    setLoading(false); // Stop loading after processing
+    setLoading(false);
   };
 
   if (!showPopup) return null;
 
   return (
     <>
-      {/* <ToastContainer /> */}
       <div
         className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 ease-in-out"
         onClick={() => setShowPopup(false)}
@@ -152,9 +150,9 @@ export default function LoginPopup({
             <Button
               type="submit"
               className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
-              disabled={loading} // Disable button while loading
+              disabled={loading} 
             >
-              {loading ? <Spinner /> : "Sign In"} {/* Show Spinner instead of text */}
+              {loading ? <Spinner /> : "Sign In"} 
             </Button>
 
             <div className="flex items-center my-4">
