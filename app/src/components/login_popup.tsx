@@ -8,6 +8,7 @@ import Image from "next/image";
 import { FaUserPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Spinner from "./spinner"; // Import Spinner component
 
 export default function LoginPopup({
   showPopup,
@@ -51,23 +52,30 @@ export default function LoginPopup({
       console.log("User data:", userData); 
       if (userData?.user?.role === "mentor") {
         if (userData?.user?.profileCompleted === true) {
+          setLoading(false); // Stop loading before redirect
           router.push("/mentor/dashboard");
         } else {
+          setLoading(false);
           router.push("/mentor/profile_setup");
         }
       } else if (userData?.user?.role === "mentee") {
         if (userData?.user?.profileCompleted === true) {
+          setLoading(false);
           router.push("/mentee/dashboard");
         } else {
+          setLoading(false);
           router.push("/mentee/profile_setup");
         }
       } else if (userData?.user?.role === "admin") {
-        router.push("/test_match");
+        setLoading(false);
+        router.push("/admin");
       } else {
+        setLoading(false);
         console.error("Invalid role:", userData?.user?.role);
       }
 
-      setShowPopup(false); // Close the login popup
+      setLoading(false);
+      setShowPopup(false); // 
     }
 
     setLoading(false); // Stop loading after processing
@@ -146,7 +154,7 @@ export default function LoginPopup({
               className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
               disabled={loading} // Disable button while loading
             >
-              {loading ? "Processing..." : "Sign In"} {/* Show loading text */}
+              {loading ? <Spinner /> : "Sign In"} {/* Show Spinner instead of text */}
             </Button>
 
             <div className="flex items-center my-4">

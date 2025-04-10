@@ -5,9 +5,26 @@ import { Button } from "@heroui/button"; // ✅ Fixed: assume Button is default 
 import { motion } from "framer-motion";
 import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
-// import usesession from "next-auth/react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("loggedOut") === "true") {
+      toast.success("You have successfully logged out.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, []);
+
   return (
     <>
       <Navbar />

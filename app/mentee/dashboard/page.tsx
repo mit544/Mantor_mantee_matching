@@ -5,17 +5,36 @@ import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
 import { useSession } from "next-auth/react";
 import { Dialog } from "@headlessui/react";
+import axios from "axios";
+import MenteeNavbar from "@/src/components/dashboard_navbar";
 
 export default function MenteeDashboard() {
   const [activeTab, setActiveTab] = useState("Overview");
   const { data: session } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [menteeData, setMenteeData] = useState(null);
 
   const user = session?.user;
 
+  useEffect(() => {
+    async function fetchMenteeData() {
+      try {
+        const response = await axios.get("/api/mentee_dashboards");
+        setMenteeData(response.data.mentee);
+        console.log(response.data.mentee)
+      } catch (error) {
+        console.error("Error fetching mentee data:", error);
+      }
+    }
+
+    if (session) {
+      fetchMenteeData();
+    }
+  }, [session]);
+
   return (
     <>
-      <Navbar />
+      <MenteeNavbar />
       <div className="max-w-7xl mx-auto p-8">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Profile Section */}
@@ -27,7 +46,7 @@ export default function MenteeDashboard() {
                 className="w-24 h-24 rounded-full mx-auto mb-4"
               />
               <h2 className="text-xl font-bold">
-                {user?.name || "Mentee User"}
+                {menteeData?.name || user?.name || "Mentee User"}
               </h2>
               <p className="text-gray-600">
                 {user?.email || "user@mentor.com"}
@@ -35,8 +54,8 @@ export default function MenteeDashboard() {
               <p className="text-gray-500 mt-2">Mentee at MentorSync</p>
             </div>
             <div className="mt-6">
-              <p className="text-gray-600 text-sm">Course: Computer Science</p>
-              <p className="text-gray-600 text-sm">Domain: Digital</p>
+              <p className="text-gray-600 text-sm">Course: {menteeData?.course || "N/A"}</p>
+              <p className="text-gray-600 text-sm">Domain: {menteeData?.course_domain || "N/A"}</p>
               <p className="text-gray-600 text-sm">Graduation Year: 2025</p>
             </div>
             <div className="mt-6 flex flex-col gap-2">
@@ -132,16 +151,16 @@ export default function MenteeDashboard() {
             </Dialog.Title>
             <div className="space-y-2">
               <p>
-                <strong>Name:</strong> {user?.name || "N/A"}
+                <strong>Name:</strong> {menteeData?.name || "N/A"}
               </p>
               <p>
                 <strong>Email:</strong> {user?.email || "N/A"}
               </p>
               <p>
-                <strong>Course:</strong> Computer Science
+                <strong>Course:</strong> {menteeData?.course || "N/A"}
               </p>
               <p>
-                <strong>Domain:</strong> Digital
+                <strong>Domain:</strong> {menteeData?.course_domain || "N/A"}
               </p>
               <p>
                 <strong>Graduation Year:</strong> 2025

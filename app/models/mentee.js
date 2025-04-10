@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "./user";
 
 const MenteeSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -182,4 +183,26 @@ const MenteeSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.models.Mentee || mongoose.model("Mentee", MenteeSchema);
+// Static method to find mentee by user email
+MenteeSchema.statics.findByUserEmail = async function (email) {
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Find the mentee by user ID
+    const mentee = await this.findOne({ user_id: user._id }).populate("user_id", "name email role profileCompleted");
+    if (!mentee) {
+      throw new Error("Mentee not found");
+    }
+
+    return mentee;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const Mentee = mongoose.models.Mentee || mongoose.model("Mentee", MenteeSchema);
+export default Mentee;

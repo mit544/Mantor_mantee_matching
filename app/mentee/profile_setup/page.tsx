@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import Navbar from "@/src/components/navbar";
 import Footer from "@/src/components/footer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@heroui/button";
+import DashboardNavbar from "@/src/components/dashboard_navbar";
 
 import StepOne from "@/src/components/mentee/stepone";
 import StepTwo from "@/src/components/mentee/steptwo";
@@ -175,8 +175,8 @@ export default function MenteeFormPage() {
     </div>
   );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    // e.preventDefault();
     setMessage("");
     try {
       const res = await fetch("/api/mentee", {
@@ -230,7 +230,7 @@ export default function MenteeFormPage() {
 
   return (
     <>
-      <Navbar />
+      <DashboardNavbar />
       <div className="max-w-3xl mx-auto p-8 my-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-4xl font-extrabold mb-6 text-center text-primary">
           Mentee Profile Setup

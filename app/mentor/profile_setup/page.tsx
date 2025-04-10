@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import Navbar from "@/src/components/navbar";
+// import Navbar from "@/src/components/navbar";
+import DashboardNavbar from "@/src/components/dashboard_navbar";
 import Footer from "@/src/components/footer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -212,7 +213,7 @@ export default function MentorFormPage() {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch("/api/mentor", {
+      const res = await fetch("/api/mentor_dashboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, user_id: session?.user?.id }),
@@ -243,7 +244,7 @@ export default function MentorFormPage() {
 
   return (
     <>
-      <Navbar />
+      <DashboardNavbar />
       <div className="max-w-3xl mx-auto p-8 my-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-4xl font-extrabold mb-6 text-center text-primary">
           Mentor Profile Setup
