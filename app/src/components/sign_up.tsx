@@ -13,6 +13,7 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "./spinner";
 
 export default function SignUpPopup({
   showPopup,
@@ -32,12 +33,13 @@ export default function SignUpPopup({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState("Select Role");
-
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!", {
@@ -49,6 +51,7 @@ export default function SignUpPopup({
         draggable: true,
         theme: "colored",
       });
+      setLoading(false);
       return;
     }
 
@@ -62,6 +65,7 @@ export default function SignUpPopup({
         draggable: true,
         theme: "colored",
       });
+      setLoading(false);
       return;
     }
 
@@ -75,18 +79,20 @@ export default function SignUpPopup({
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("Account created successfully! Now you can login to you account", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
-        openLoginPopup()
+        toast.success(
+          "Account created successfully! Now you can login to you account",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        );
+        openLoginPopup();
       } else {
-
         const data = await res.json();
         toast.error(data.message || "Failed to sign up. Please try again.", {
           position: "top-right",
@@ -109,6 +115,7 @@ export default function SignUpPopup({
         theme: "colored",
       });
     }
+    setLoading(false);
   };
 
   if (!showPopup) return null;
@@ -230,8 +237,9 @@ export default function SignUpPopup({
           <Button
             type="submit"
             className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
+            disabled={loading}
           >
-            Sign Up
+            {loading ? <LoadingSpinner /> : "Sign Up"}
           </Button>
           <div className="flex items-center my-4">
             <div className="flex-grow border-t border-gray-300"></div>

@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Button } from "@heroui/button";
 import Image from "next/image";
 import { FaUserPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Spinner from "./spinner"; // Import Spinner component
+import LoadingSpinner from "./spinner";
+
 
 export default function LoginPopup({
   showPopup,
@@ -51,26 +52,26 @@ export default function LoginPopup({
       console.log("User data:", userData); 
       if (userData?.user?.role === "mentor") {
         if (userData?.user?.profileCompleted === true) {
-          setLoading(false);
           router.push("/mentor/dashboard");
-        } else {
           setLoading(false);
+        } else {
           router.push("/mentor/profile_setup");
+          setLoading(false);
         }
       } else if (userData?.user?.role === "mentee") {
         if (userData?.user?.profileCompleted === true) {
-          setLoading(false);
           router.push("/mentee/dashboard");
-        } else {
           setLoading(false);
+        } else {
           router.push("/mentee/profile_setup");
+          setLoading(false);
         }
       } else if (userData?.user?.role === "admin") {
-        setLoading(false);
         router.push("/admin");
-      } else {
         setLoading(false);
+      } else {
         console.error("Invalid role:", userData?.user?.role);
+        setLoading(false);
       }
 
       setLoading(false);
@@ -152,7 +153,7 @@ export default function LoginPopup({
               className="w-full bg-primary text-background py-2 rounded-lg font-semibold hover:opacity-90 transition"
               disabled={loading} 
             >
-              {loading ? <Spinner /> : "Sign In"} 
+              {loading ? <LoadingSpinner /> : "Sign In"} 
             </Button>
 
             <div className="flex items-center my-4">
