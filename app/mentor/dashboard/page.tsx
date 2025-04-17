@@ -14,22 +14,26 @@ export default function MentorDashboard() {
   const { data: session } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mentorData, setMentorData] = useState(null);
+  const [sessions, setSessions] = useState([]); // State for sessions
+  const [messages, setMessages] = useState([]); // State for messages
 
   const user = session?.user;
 
   useEffect(() => {
-    async function fetchMenteeData() {
+    async function fetchMentorData() {
       try {
         const response = await axios.get("/api/mentor_dashboard");
-        setMentorData(response.data.mentee);
-        console.log(response.data.mentor);
+        setMentorData(response.data.mentor); // Extract mentor-specific data
+        setSessions(response.data.sessions || []); // Extract sessions data
+        setMessages(response.data.messages || []); // Extract messages data
+        console.log(response.data); // Log all data for debugging
       } catch (error) {
-        console.error("Error fetching mentee data:", error);
+        console.error("Error fetching mentor data:", error);
       }
     }
 
     if (session) {
-      fetchMenteeData();
+      fetchMentorData();
     }
   }, [session]);
 
@@ -61,17 +65,17 @@ export default function MentorDashboard() {
                 className="w-24 h-24 rounded-full mx-auto mb-4"
               />
               <h2 className="text-xl font-bold">
-                {user?.name || "Mentor User"}
+                {mentorData?.name || "Mentor User"}
               </h2>
               <p className="text-gray-600">
-                {user?.email || "user@mentor.com"}
+                {mentorData?.email || "user@mentor.com"}
               </p>
               <p className="text-gray-500 mt-2">Mentor at MentorSync</p>
             </div>
             <div className="mt-6">
-              <p className="text-gray-600 text-sm">Company: Tech Solutions</p>
-              <p className="text-gray-600 text-sm">Role: Senior Developer</p>
-              <p className="text-gray-600 text-sm">Experience: 10+ years</p>
+              <p className="text-gray-600 text-sm">Company: {mentorData?.company || "N/A"}</p>
+              <p className="text-gray-600 text-sm">Role: {mentorData?.job_role || "N/A"}</p>
+              <p className="text-gray-600 text-sm">Experience: {mentorData?.job_role || "N/A"}</p>
             </div>
             <div className="mt-6 flex flex-col gap-2">
               <button
@@ -117,21 +121,55 @@ export default function MentorDashboard() {
                   </div>
                 )}
                 {activeTab === "Sessions" && (
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <h3 className="font-bold">You have no sessions yet</h3>
-                    <p className="text-gray-700">
-                      Once mentees are assigned, your sessions will appear
-                      here.
-                    </p>
+                  <div className="space-y-4">
+                    {sessions.length > 0 ? (
+                      sessions.map((session, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-100 p-4 rounded-lg"
+                        >
+                          <h3 className="font-bold">{session.title}</h3>
+                          <p className="text-gray-700">{session.description}</p>
+                          <p className="text-gray-500 text-sm">
+                            Date: {session.date}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="bg-gray-100 p-4 rounded-lg">
+                        <h3 className="font-bold">You have no sessions yet</h3>
+                        <p className="text-gray-700">
+                          Once mentees are assigned, your sessions will appear
+                          here.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
                 {activeTab === "Messages" && (
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <h3 className="font-bold">Messages feature coming soon</h3>
-                    <p className="text-gray-700">
-                      Stay tuned to communicate with your mentees directly from
-                      the dashboard.
-                    </p>
+                  <div className="space-y-4">
+                    {messages.length > 0 ? (
+                      messages.map((message, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-100 p-4 rounded-lg"
+                        >
+                          <h3 className="font-bold">{message.sender}</h3>
+                          <p className="text-gray-700">{message.content}</p>
+                          <p className="text-gray-500 text-sm">
+                            Sent: {message.timestamp}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="bg-gray-100 p-4 rounded-lg">
+                        <h3 className="font-bold">No messages yet</h3>
+                        <p className="text-gray-700">
+                          Stay tuned to communicate with your mentees directly
+                          from the dashboard.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

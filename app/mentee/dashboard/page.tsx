@@ -48,7 +48,7 @@ export default function MenteeDashboard() {
                 {menteeData?.name || user?.name || "Mentee User"}
               </h2>
               <p className="text-gray-600">
-                {user?.email || "user@mentor.com"}
+                {user?.email || "user@mentee.com"}
               </p>
               <p className="text-gray-500 mt-2">Mentee at MentorSync</p>
             </div>
