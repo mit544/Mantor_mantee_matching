@@ -14,8 +14,8 @@ export default function MentorDashboard() {
   const { data: session } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mentorData, setMentorData] = useState(null);
-  const [sessions, setSessions] = useState([]); // State for sessions
-  const [messages, setMessages] = useState([]); // State for messages
+  const [sessions, setSessions] = useState([]); 
+  const [messages, setMessages] = useState([]); 
 
   const user = session?.user;
 
@@ -23,10 +23,10 @@ export default function MentorDashboard() {
     async function fetchMentorData() {
       try {
         const response = await axios.get("/api/mentor_dashboard");
-        setMentorData(response.data.mentor); // Extract mentor-specific data
-        setSessions(response.data.sessions || []); // Extract sessions data
-        setMessages(response.data.messages || []); // Extract messages data
-        console.log(response.data); // Log all data for debugging
+        setMentorData(response.data.mentor); 
+        setSessions(response.data.sessions || []); 
+        setMessages(response.data.messages || []); 
+        console.log(response.data); 
       } catch (error) {
         console.error("Error fetching mentor data:", error);
       }
@@ -206,13 +206,13 @@ export default function MentorDashboard() {
                 <strong>Email:</strong> {user?.email || "N/A"}
               </p>
               <p>
-                <strong>Company:</strong> Tech Solutions
+                <strong>Company:</strong> {mentorData?.company || "N/A"}
               </p>
               <p>
-                <strong>Role:</strong> Senior Developer
+                <strong>Role:</strong> {mentorData?.job_role || "N/A"}
               </p>
               <p>
-                <strong>Experience:</strong> 10+ years
+                <strong>Experience:</strong> {mentorData?.job_role || "N/A"}
               </p>
             </div>
             <div className="mt-6 text-right">
