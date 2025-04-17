@@ -212,7 +212,7 @@ export default function MentorFormPage() {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch("/api/mentor_dashboard", {
+      const res = await fetch("/api/mentor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, user_id: session?.user?.id }),
