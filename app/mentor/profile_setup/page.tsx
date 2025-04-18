@@ -8,6 +8,7 @@ import Footer from "@/src/components/footer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@heroui/button";
+import LoadingPageRedirection from "@/src/components/spinner_for_page";
 
 import MentorStepOne from "@/src/components/mentor/stepone";
 import MentorStepTwo from "@/src/components/mentor/steptwo";
@@ -16,6 +17,7 @@ import MentorStepThree from "@/src/components/mentor/stepthree";
 export default function MentorFormPage() {
   const { data: session } = useSession();
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,15 +35,23 @@ export default function MentorFormPage() {
     adjustments_required: "",
   });
 
-   const [tagInputs, setTagInputs] = useState({
+  const [tagInputs, setTagInputs] = useState({
     industry_experience: "",
     expertise_courses: "",
     skills_offered: "",
     mentorship_style: "",
-    });
-  
+  });
+
   const [currentStep, setCurrentStep] = useState(1);
   const progressPercentage = (currentStep / 3) * 100;
+
+  useEffect(() => {
+    if (session) {
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [session]);
 
   useEffect(() => {
     toast.success("Welcome Mentor!, setup your profile...", {
@@ -219,10 +229,10 @@ export default function MentorFormPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage("Mentor added successfully!");
+        setMessage("You have successfully created your profile.");
         setTimeout(() => {
           window.location.href = "/mentor/dashboard";
-        }, 3000);
+        }, 300);
       } else {
         setMessage(data.message || "An error occurred.");
       }
@@ -240,6 +250,10 @@ export default function MentorFormPage() {
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: 50 },
   };
+
+  if (loading) {
+    return <LoadingPageRedirection />;
+  }
 
   return (
     <>

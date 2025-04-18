@@ -8,14 +8,16 @@ import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingPageRedirection from "@/src/components/spinner_for_page";
 
 export default function MentorDashboard() {
   const [activeTab, setActiveTab] = useState("Overview");
   const { data: session } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mentorData, setMentorData] = useState(null);
-  const [sessions, setSessions] = useState([]); 
-  const [messages, setMessages] = useState([]); 
+  const [sessions, setSessions] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const user = session?.user;
 
@@ -23,17 +25,21 @@ export default function MentorDashboard() {
     async function fetchMentorData() {
       try {
         const response = await axios.get("/api/mentor_dashboard");
-        setMentorData(response.data.mentor); 
-        setSessions(response.data.sessions || []); 
-        setMessages(response.data.messages || []); 
-        console.log(response.data); 
+        setMentorData(response.data.mentor);
+        setSessions(response.data.sessions || []);
+        setMessages(response.data.messages || []);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching mentor data:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     if (session) {
       fetchMentorData();
+    } else {
+      setLoading(false);
     }
   }, [session]);
 
@@ -51,6 +57,10 @@ export default function MentorDashboard() {
       });
     }
   }, []);
+
+  if (loading) {
+    return <LoadingPageRedirection />; 
+  }
 
   return (
     <>
@@ -75,7 +85,7 @@ export default function MentorDashboard() {
             <div className="mt-6">
               <p className="text-gray-600 text-sm">Company: {mentorData?.company || "N/A"}</p>
               <p className="text-gray-600 text-sm">Role: {mentorData?.job_role || "N/A"}</p>
-              <p className="text-gray-600 text-sm">Experience: {mentorData?.job_role || "N/A"}</p>
+              <p className="text-gray-600 text-sm">Experience: {mentorData?.experience || "N/A"}</p>
             </div>
             <div className="mt-6 flex flex-col gap-2">
               <button
@@ -179,14 +189,11 @@ export default function MentorDashboard() {
           <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-1/4">
             <h2 className="text-lg font-bold mb-4">MentorSync Updates</h2>
             <p className="text-gray-600">
-              We’re constantly working to improve your mentorship experience.
-              Soon you’ll see features like AI-powered matching, performance
-              tracking, and integrated messaging.
+              Stay updated with the latest news and features from MentorSync.
             </p>
           </div>
         </div>
       </div>
-
       <Dialog
         open={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
@@ -212,7 +219,7 @@ export default function MentorDashboard() {
                 <strong>Role:</strong> {mentorData?.job_role || "N/A"}
               </p>
               <p>
-                <strong>Experience:</strong> {mentorData?.job_role || "N/A"}
+                <strong>Experience:</strong> {mentorData?.experience || "N/A"}
               </p>
             </div>
             <div className="mt-6 text-right">

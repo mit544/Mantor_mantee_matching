@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@heroui/button";
 import DashboardNavbar from "@/src/components/dashboard_navbar";
+import LoadingPageRedirection from "@/src/components/spinner_for_page";
 
 import StepOne from "@/src/components/mentee/stepone";
 import StepTwo from "@/src/components/mentee/steptwo";
@@ -15,7 +16,7 @@ import StepThree from "@/src/components/mentee/stepthree";
 
 export default function MenteeFormPage() {
   const { data: session } = useSession();
-
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     student_id: "",
     name: "",
@@ -73,6 +74,14 @@ export default function MenteeFormPage() {
     }
     return true;
   };
+
+  useEffect(() => {
+    if (session) {
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [session]);
 
   useEffect(() => {
     toast.success("Welcome Mentee!, setup your profile...", {
@@ -185,10 +194,10 @@ export default function MenteeFormPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage("Mentee added successfully!");
+        setMessage("You have successfully created your profile.");
         setTimeout(() => {
           window.location.href = "/mentee/dashboard";
-        }, 3000);
+        }, 300);
       } else {
         setMessage(data.message || "An error occurred.");
       }
@@ -226,6 +235,10 @@ export default function MenteeFormPage() {
     }
     setCurrentStep((prev) => prev + 1);
   };
+
+  if (loading) {
+    return <LoadingPageRedirection />;
+  }
 
   return (
     <>

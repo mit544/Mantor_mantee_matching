@@ -7,12 +7,14 @@ import { useSession } from "next-auth/react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import MenteeNavbar from "@/src/components/dashboard_navbar";
+import LoadingPageRedirection from "@/src/components/spinner_for_page";
 
 export default function MenteeDashboard() {
   const [activeTab, setActiveTab] = useState("Overview");
   const { data: session } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [menteeData, setMenteeData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const user = session?.user;
 
@@ -21,16 +23,24 @@ export default function MenteeDashboard() {
       try {
         const response = await axios.get("/api/mentee_dashboards");
         setMenteeData(response.data.mentee);
-        console.log(response.data.mentee)
+        console.log(response.data.mentee);
       } catch (error) {
         console.error("Error fetching mentee data:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     if (session) {
       fetchMenteeData();
+    } else {
+      setLoading(false);
     }
   }, [session]);
+
+  if (loading) {
+    return <LoadingPageRedirection />; 
+  }
 
   return (
     <>

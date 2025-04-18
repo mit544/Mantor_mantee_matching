@@ -6,6 +6,7 @@ import DashboardNavbar from "@/src/components/dashboard_navbar";
 import Footer from "@/src/components/footer";
 import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement } from "chart.js";
+import LoadingPageRedirection from "@/src/components/spinner_for_page";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement);
 
@@ -65,15 +66,22 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [message, setMessage] = useState<string>("");
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     const fetchMentees = async () => {
+      setIsFetching(true);
       const res = await fetch("/api/mentee");
       const data = await res.json();
       setMentees(data.mentees || []);
+      setIsFetching(false);
     };
     fetchMentees();
   }, []);
+
+  if (isFetching) {
+    return <LoadingPageRedirection />;
+  }
 
   const handleMatch = async () => {
     if (!selectedMentee) return;
