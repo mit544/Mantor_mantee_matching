@@ -1,11 +1,12 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import connectMongoDB from "@/lib/mongodb";
 import Mentor from '@/models/mentor';
 import Mentee from '@/models/mentee';
 import mongoose from 'mongoose';
 
-const getOverlapScore = (arr1: string[], arr2: string[], weight = 1): number => {
+const getOverlapScore = (arr1: string[] = [], arr2: string[] = [], weight = 1): number => {
+  if (!Array.isArray(arr1)) arr1 = [];
+  if (!Array.isArray(arr2)) arr2 = [];
   const set1 = new Set(arr1.map((s) => s.toLowerCase()));
   const set2 = new Set(arr2.map((s) => s.toLowerCase()));
   const overlap = [...set1].filter((x) => set2.has(x));
