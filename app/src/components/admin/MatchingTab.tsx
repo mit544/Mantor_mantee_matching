@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LoadingSpinner from "@/src/components/spinner";
+import EmailModel from "./emaiModel";
+import { Button } from "@heroui/button";
 
 export default function MatchingTab() {
   const [mentees, setMentees] = useState<any[]>([]);
   const [selectedMentee, setSelectedMentee] = useState<string>("");
   const [matchResult, setMatchResult] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     const fetchMentees = async () => {
@@ -42,7 +46,7 @@ export default function MatchingTab() {
   const renderFullDetails = (details: any, isMentee: boolean) => (
     <>
       <p><strong>Name:</strong> {details.name}</p>
-  
+
       {isMentee ? (
         <>
           <p><strong>Student ID:</strong> {details.student_id}</p>
@@ -78,66 +82,88 @@ export default function MatchingTab() {
       )}
     </>
   );
-  
 
   return (
-    <div className="bg-white shadow-md rounded p-6 mb-6">
-      <label className="block mb-2 font-semibold text-gray-700">
-        Select a Mentee
-      </label>
-      <select
-        className="w-full p-2 border border-gray-300 rounded"
-        value={selectedMentee}
-        onChange={(e) => setSelectedMentee(e.target.value)}
-      >
-        <option value="">-- Choose a mentee --</option>
-        {mentees.map((mentee) => (
-          <option key={mentee._id} value={mentee.student_id}>
-            {mentee.name} ({mentee.student_id})
-          </option>
-        ))}
-      </select>
+    <>
+      <div className="bg-white shadow-md rounded p-6 mb-6">
+        <label className="block mb-2 font-semibold text-gray-700">
+          Select a Mentee
+        </label>
+        <select
+          className="w-full p-2 border border-gray-300 rounded"
+          value={selectedMentee}
+          onChange={(e) => setSelectedMentee(e.target.value)}
+        >
+          <option value="">-- Choose a mentee --</option>
+          {mentees.map((mentee) => (
+            <option key={mentee._id} value={mentee.student_id}>
+              {mentee.name} ({mentee.student_id})
+            </option>
+          ))}
+        </select>
 
-      <button
-        onClick={handleMatch}
-        className="mt-4 bg-primary text-white px-6 py-2 rounded hover:bg-opacity-90"
-        disabled={loading || !selectedMentee}
-      >
-        {loading ? "Matching..." : "Find Best Match"}
-      </button>
+        <Button
+          onPress={handleMatch}
+          className="mt-4 bg-primary text-white px-6 py-2 rounded hover:bg-opacity-90"
+          disabled={loading || !selectedMentee}
+        >
+          {loading ? "Matching..." : "Find Best Match"}
+        </Button>
 
-      {matchResult && (
-        <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow">
-          {matchResult.error ? (
-            <p className="text-red-600 font-semibold">{matchResult.error}</p>
-          ) : (
-            <>
-              <h2 className="text-2xl font-semibold text-center text-primary mb-4">
-                Best Match Found
-              </h2>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-white p-4 rounded shadow">
-                  <h3 className="text-xl font-bold text-primary mb-2">
-                    Mentee Details
-                  </h3>
-                  {renderFullDetails(matchResult.mentee, true)}
+        {loading && (
+          <div className="mt-4 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {matchResult && (
+          <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow">
+            {matchResult.error ? (
+              <p className="text-red-600 font-semibold">{matchResult.error}</p>
+            ) : (
+              <>
+                <h2 className="text-2xl font-semibold text-center text-primary mb-4">
+                  Best Match Found
+                </h2>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-white p-4 rounded shadow">
+                    <h3 className="text-xl font-bold text-primary mb-2">
+                      Mentee Details
+                    </h3>
+                    {renderFullDetails(matchResult.mentee, true)}
+                  </div>
+                  <div className="bg-white p-4 rounded shadow">
+                    <h3 className="text-xl font-bold text-primary mb-2">
+                      Mentor Details
+                    </h3>
+                    {renderFullDetails(matchResult.bestMentor, false)}
+                  </div>
                 </div>
-                <div className="bg-white p-4 rounded shadow">
-                  <h3 className="text-xl font-bold text-primary mb-2">
-                    Mentor Details
-                  </h3>
-                  {renderFullDetails(matchResult.bestMentor, false)}
+                <div className="mt-6 text-center">
+                  <p className="text-lg font-semibold">
+                    Compatibility Score: <span className="text-primary">{matchResult.compatibilityScore}</span>
+                  </p>
                 </div>
-              </div>
-              <div className="mt-6 text-center">
-                <p className="text-lg font-semibold">
-                  Compatibility Score: <span className="text-primary">{matchResult.compatibilityScore}</span>
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+                <div className="mt-4 text-center">
+                  <Button
+                    onPress={() => setShowEmailModal(true)}
+                    className="bg-primary text-white px-6 py-2 rounded hover:bg-opacity-90"
+                  >
+                    Send Introduction Email
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      <EmailModel
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        mentor={matchResult?.bestMentor} // Pass all mentor details
+        mentee={matchResult?.mentee} // Pass all mentee details
+      />
+    </>
   );
 }
+
